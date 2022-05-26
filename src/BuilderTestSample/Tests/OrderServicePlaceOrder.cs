@@ -10,6 +10,7 @@ namespace BuilderTestSample.Tests
         private readonly OrderService _orderService = new ();
         private readonly OrderBuilder _orderBuilder = new ();
 
+        // added comment
         [Fact]
         public void ThrowsExceptionGivenOrderWithExistingId()
         {
