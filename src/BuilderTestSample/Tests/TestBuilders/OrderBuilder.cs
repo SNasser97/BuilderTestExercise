@@ -1,4 +1,5 @@
 ﻿using BuilderTestSample.Model;
+using System;
 
 namespace BuilderTestSample.Tests.TestBuilders
 {
@@ -27,6 +28,15 @@ namespace BuilderTestSample.Tests.TestBuilders
         public Order Build()
         {
             return _order;
+        }
+
+        public OrderBuilder WithAmount(decimal amount)
+        {
+            if (amount == 100m || amount == 0m)
+            {
+                _order.TotalAmount = amount;
+            }
+            return this;
         }
     }
 }
