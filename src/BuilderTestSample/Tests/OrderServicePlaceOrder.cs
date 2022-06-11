@@ -12,6 +12,7 @@ namespace BuilderTestSample.Tests
     {
         private readonly OrderService _orderService = new ();
         private readonly OrderBuilder _orderBuilder = new ();
+        private readonly CustomerBuilder _customerBuilder = new ();
 
         [Fact]
         public void ThrowsInvalidOrderExceptionGivenOrderWithExistingId()
@@ -39,9 +40,13 @@ namespace BuilderTestSample.Tests
         [Fact]
         public void DoesNotThrowInvalidOrderExceptionGivenOrderWithAmountOfOneHundred()
         {
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .Build();
             Order order = _orderBuilder
                     .WithId(0)
                     .WithAmount(100m)
+                    .WithCustomer(customer)
                     .Build();
             try
             {
@@ -54,7 +59,7 @@ namespace BuilderTestSample.Tests
         }
 
         [Fact]
-        public void ThrowsInvalidCustomerExceptionGivenOrderWithNoCustomer()
+        public void ThrowsInvalidOrderExceptionGivenOrderWithNoCustomer()
         {
             Order order = _orderBuilder
                     .WithId(0)
