@@ -25,6 +25,12 @@ namespace BuilderTestSample.Tests.TestBuilders
             return this;
         }
 
+        public OrderBuilder WithCustomer(Customer customer)
+        {
+            _order.Customer = customer;
+            return this;
+        }
+
         public Order Build()
         {
             return _order;
