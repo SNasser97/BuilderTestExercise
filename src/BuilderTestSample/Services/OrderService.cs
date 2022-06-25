@@ -62,6 +62,7 @@ namespace BuilderTestSample.Services
             // TODO: postalcode is required (not null or empty)
             if (string.IsNullOrWhiteSpace(homeAddress.PostalCode)) throw new InvalidAddressException("Postalcode cannot be null or empty");
             // TODO: country is required (not null or empty)
+            if (string.IsNullOrWhiteSpace(homeAddress.Country)) throw new InvalidAddressException("Country cannot be null or empty");
         }
 
         private void ExpediteOrder(Order order)
