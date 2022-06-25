@@ -407,6 +407,39 @@ namespace BuilderTestSample.Tests
             Assert.Equal("Country cannot be null or empty", invalidAddressException.Message);
         }
 
+        [Fact]
+        public void DoesNotThrowInvalidAddressExceptionWhenAddressIsValid()
+        {
+            Address address = _addressBuilder
+                    .WithStreetOne("street1")
+                    .WithCity("city")
+                    .WithState("state")
+                    .WithPostalCode("postalcode")
+                    .WithCountry("country")
+                    .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(201)
+                   .WithTotalPurchases(1)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            try
+            {
+                _orderService.PlaceOrder(order);
+            }
+            catch (InvalidAddressException ex)
+            {
+                throw new XunitException($"Should not throw InvalidAddressException: {ex.Message}");
+            }
+        }
+
         private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {
