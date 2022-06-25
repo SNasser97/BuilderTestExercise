@@ -220,6 +220,36 @@ namespace BuilderTestSample.Tests
             Assert.Equal("Total purchases must be zero or higher", invalidCustomerException.Message);
         }
 
+        [Fact]
+        public void DoesNotThrowInvalidCustomerExceptionWhenCustomerDetailsAreValid()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .WithHomeAddress(new Address())
+                    .WithFirstname("Bob")
+                    .WithLastname("Doe")
+                    .WithCreditRating(201)
+                    .WithTotalPurchases(1)
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            try
+            {
+                _orderService.PlaceOrder(order);
+            }
+            catch (InvalidCustomerException ex)
+            {
+                throw new XunitException($"Should not throw InvalidCustomerException: {ex.Message}");
+            }
+            catch (InsufficientCreditException ex)
+            {
+                throw new XunitException($"Should not throw InsufficientCreditException: {ex.Message}");
+            }
+        }
+
         private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {
