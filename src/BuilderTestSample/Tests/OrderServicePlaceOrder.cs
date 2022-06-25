@@ -24,7 +24,7 @@ namespace BuilderTestSample.Tests
                             .WithId(123)
                             .Build();
 
-            InvalidOrderException invalidOrderException = AssertOrderException<InvalidOrderException>(_orderService, order);
+            InvalidOrderException invalidOrderException = AssertOnException<InvalidOrderException>(_orderService, order);
             Assert.Equal("Order ID must be 0.", invalidOrderException.Message);
         }
 
@@ -36,7 +36,7 @@ namespace BuilderTestSample.Tests
                             .WithAmount(0)
                             .Build();
 
-            InvalidOrderException invalidOrderException = AssertOrderException<InvalidOrderException>(_orderService, order);
+            InvalidOrderException invalidOrderException = AssertOnException<InvalidOrderException>(_orderService, order);
             Assert.Equal("Order amount must be greater than 0.", invalidOrderException.Message);
         }
 
@@ -73,7 +73,7 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .Build();
 
-            InvalidOrderException invalidOrderException = AssertOrderException<InvalidOrderException>(_orderService, order);
+            InvalidOrderException invalidOrderException = AssertOnException<InvalidOrderException>(_orderService, order);
             Assert.Equal("Order cannot have null customer.", invalidOrderException.Message);
         }
 
@@ -91,7 +91,7 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            InvalidCustomerException invalidCustomerException = AssertOnException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer Id must be greater than zero", invalidCustomerException.Message);
         }
 
@@ -106,7 +106,7 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            InvalidCustomerException invalidCustomerException = AssertOnException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer Id must be greater than zero", invalidCustomerException.Message);
         }
 
@@ -122,7 +122,7 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            InvalidCustomerException invalidCustomerException = AssertOnException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer Address cannot be null", invalidCustomerException.Message);
         }
 
@@ -140,7 +140,7 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            InvalidCustomerException invalidCustomerException = AssertOnException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
         }
 
@@ -158,7 +158,7 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            InvalidCustomerException invalidCustomerException = AssertOnException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
         }
 
@@ -176,7 +176,7 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            InvalidCustomerException invalidCustomerException = AssertOnException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
         }
 
@@ -195,11 +195,11 @@ namespace BuilderTestSample.Tests
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InsufficientCreditException insufficientCreditException = AssertOrderException<InsufficientCreditException>(_orderService, order);
+            InsufficientCreditException insufficientCreditException = AssertOnException<InsufficientCreditException>(_orderService, order);
             Assert.Equal("Credit rating must be greater than 200", insufficientCreditException.Message);
         }
 
-        private TException AssertOrderException<TException>(OrderService orderService, Order order)
+        private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {
             
