@@ -258,7 +258,9 @@ namespace BuilderTestSample.Tests
                 throw new XunitException($"Should not throw InsufficientCreditException: {ex.Message}");
             }
         }
-
+        /*
+            Address exception checks - tests ValidateAddress
+        */
         [Theory]
         [InlineData("")]
         [InlineData(" ")]
