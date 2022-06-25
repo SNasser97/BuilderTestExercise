@@ -199,6 +199,27 @@ namespace BuilderTestSample.Tests
             Assert.Equal("Credit rating must be greater than 200", insufficientCreditException.Message);
         }
 
+        [Fact]
+        public void ThrowsInvalidCustomerExceptionWhenCustomerTotalPurchasesIsLessThanZero()
+        {
+
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .WithHomeAddress(new Address())
+                    .WithFirstname("Bob")
+                    .WithLastname("Doe")
+                    .WithCreditRating(201)
+                    .WithTotalPurchases(-1)
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOnException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Total purchases must be zero or higher", invalidCustomerException.Message);
+        }
+
         private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {

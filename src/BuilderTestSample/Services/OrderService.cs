@@ -43,6 +43,7 @@ namespace BuilderTestSample.Services
             // TODO: customer must have credit rating > 200 (otherwise throw InsufficientCreditException)
             if (customer.CreditRating <= 200) throw new InsufficientCreditException("Credit rating must be greater than 200");
             // TODO: customer must have total purchases >= 0
+            if (customer.TotalPurchases < 0) throw new InvalidCustomerException("Total purchases must be zero or higher");
 
             ValidateAddress(customer.HomeAddress);
         }
