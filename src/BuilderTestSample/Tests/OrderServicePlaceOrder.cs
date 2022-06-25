@@ -344,6 +344,35 @@ namespace BuilderTestSample.Tests
             Assert.Equal("State cannot be null or empty", invalidAddressException.Message);
         }
 
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public void ThrowsInvalidAddressExceptionWhenPostalcodeIsNullOrEmpty(string postalCodeValues)
+        {
+            Address address = _addressBuilder
+                    .WithStreetOne("street1")
+                    .WithCity("city")
+                    .WithState("state")
+                    .WithPostalCode(postalCodeValues)
+                    .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(201)
+                   .WithTotalPurchases(1)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidAddressException invalidAddressException = AssertOnException<InvalidAddressException>(_orderService, order);
+            Assert.Equal("Postalcode cannot be null or empty", invalidAddressException.Message);
+        }
+
         private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {
