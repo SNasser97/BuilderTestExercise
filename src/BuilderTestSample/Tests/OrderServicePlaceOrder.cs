@@ -46,6 +46,7 @@ namespace BuilderTestSample.Tests
         {
             Address address = _addressBuilder
                     .WithStreetOne("street1")
+                    .WithCity("city")
                     .Build();
             Customer customer = _customerBuilder
                     .WithId(1)
@@ -229,6 +230,7 @@ namespace BuilderTestSample.Tests
         {
             Address address = _addressBuilder
                     .WithStreetOne("street1")
+                    .WithCity("city")
                     .Build();
             Customer customer = _customerBuilder
                     .WithId(1)
