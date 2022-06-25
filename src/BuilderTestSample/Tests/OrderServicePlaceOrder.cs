@@ -517,7 +517,7 @@ namespace BuilderTestSample.Tests
                    .WithFirstname("Bob")
                    .WithLastname("Doe")
                    .WithCreditRating(499)
-                   .WithTotalPurchases(4999)
+                   .WithTotalPurchases(0)
                    .Build();
             Order order = _orderBuilder
                     .WithId(0)
@@ -538,7 +538,7 @@ namespace BuilderTestSample.Tests
             Assert.Equal("Bob", actualCustomer.FirstName);
             Assert.Equal("Doe", actualCustomer.LastName);
             Assert.Equal(499, actualCustomer.CreditRating);
-            Assert.Equal(4999, actualCustomer.TotalPurchases);
+            Assert.Equal(100, actualCustomer.TotalPurchases);
 
             Address actualAddress = actualCustomer.HomeAddress;
             Assert.Equal("street1", actualAddress.Street1);
@@ -593,6 +593,41 @@ namespace BuilderTestSample.Tests
                 Assert.NotNull(expectedOrder);
                 Assert.Equal(expectedOrder.TotalAmount, actualOrder.TotalAmount);
             }
+        }
+
+        [Fact]
+        public void OrderServiceTotalsupACustomersTotalPurchases()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(0)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            Order order2 = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(90m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            _orderService.PlaceOrder(order2);
+
+            Assert.Equal(190m, order.Customer.TotalPurchases);
         }
 
         private TException AssertOnException<TException>(OrderService orderService, Order order)

@@ -79,6 +79,13 @@ namespace BuilderTestSample.Services
             // TODO: add the order to the customer
             order.Customer.OrderHistory.Add(order);
             // TODO: update the customer's total purchases property
+            decimal total = 0;
+            foreach(Order orders in order.Customer.OrderHistory)
+            {
+                total += orders.TotalAmount;
+            }
+
+            order.Customer.TotalPurchases = total;
         }
     }
 }
