@@ -58,6 +58,7 @@ namespace BuilderTestSample.Services
             // TODO: city is required (not null or empty)
             if (string.IsNullOrWhiteSpace(homeAddress.City)) throw new InvalidAddressException("City cannot be null or empty");
             // TODO: state is required (not null or empty)
+            if (string.IsNullOrWhiteSpace(homeAddress.State)) throw new InvalidAddressException("State cannot be null or empty");
             // TODO: postalcode is required (not null or empty)
             // TODO: country is required (not null or empty)
         }
