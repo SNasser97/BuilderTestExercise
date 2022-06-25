@@ -12,14 +12,14 @@ namespace BuilderTestSample.Tests.TestBuilders
             return this;
         }
 
-        public AddressBuilder WithStreet2(string streetTwo)
+        public AddressBuilder WithStreetTwo(string streetTwo)
         {
 
             this._address.Street2 = streetTwo;
             return this;
         }
 
-        public AddressBuilder WithStreet3(string streetThree)
+        public AddressBuilder WithStreetThree(string streetThree)
         {
             this._address.Street3 = streetThree;
             return this;
