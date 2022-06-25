@@ -33,15 +33,14 @@ namespace BuilderTestSample.Tests.TestBuilders
 
         public Order Build()
         {
-            return _order;
+            Order currentOrder = this._order;
+            this._order = new();
+            return currentOrder;
         }
 
         public OrderBuilder WithAmount(decimal amount)
         {
-            if (amount == 100m || amount == 0m)
-            {
-                _order.TotalAmount = amount;
-            }
+            _order.TotalAmount = amount;
             return this;
         }
     }

@@ -3,6 +3,8 @@ using BuilderTestSample.Model;
 using BuilderTestSample.Services;
 using BuilderTestSample.Tests.TestBuilders;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using Xunit.Sdk;
 
@@ -405,6 +407,227 @@ namespace BuilderTestSample.Tests
                     .Build();
             InvalidAddressException invalidAddressException = AssertOnException<InvalidAddressException>(_orderService, order);
             Assert.Equal("Country cannot be null or empty", invalidAddressException.Message);
+        }
+
+        [Fact]
+        public void DoesNotThrowInvalidAddressExceptionWhenAddressIsValid()
+        {
+            Address address = _addressBuilder
+                    .WithStreetOne("street1")
+                    .WithCity("city")
+                    .WithState("state")
+                    .WithPostalCode("postalcode")
+                    .WithCountry("country")
+                    .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(201)
+                   .WithTotalPurchases(1)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            try
+            {
+                _orderService.PlaceOrder(order);
+            }
+            catch (InvalidAddressException ex)
+            {
+                throw new XunitException($"Should not throw InvalidAddressException: {ex.Message}");
+            }
+        }
+
+        /*
+            Order service tests - test order service private methods  
+        */
+        [Fact]
+        public void OrderServiceSetsExpeditedTrueOnOrderThatExceedsFiveThousandTotalPurchasesWithCreditLimitMoreThanFiveHundred()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(501)
+                   .WithTotalPurchases(5001)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            Assert.True(order.IsExpedited);
+        }
+
+        [Fact]
+        public void OrderServiceSetsExpeditedFalseOnOrderLessThanFiveThousandTotalPurchasesWithCreditLimitLessThanFiveHundred()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(4999)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            Assert.False(order.IsExpedited);
+        }
+
+        [Fact]
+        public void OrderServiceAddsOrderForCustomer()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(0)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            IEnumerable<Order> actualCustomerOrders = order.Customer.OrderHistory;
+            Assert.Single(actualCustomerOrders);
+
+            Order actualOrder = actualCustomerOrders.FirstOrDefault();
+            Assert.NotNull(actualOrder);
+            Assert.Equal(0, actualOrder.Id);
+
+            Customer actualCustomer = actualOrder.Customer;
+            Assert.Equal(1, actualCustomer.Id);
+            Assert.Equal("Bob", actualCustomer.FirstName);
+            Assert.Equal("Doe", actualCustomer.LastName);
+            Assert.Equal(499, actualCustomer.CreditRating);
+            Assert.Equal(100, actualCustomer.TotalPurchases);
+
+            Address actualAddress = actualCustomer.HomeAddress;
+            Assert.Equal("street1", actualAddress.Street1);
+            Assert.Null(actualAddress.Street2);
+            Assert.Null(actualAddress.Street3);
+            Assert.Equal("city", actualAddress.City);
+            Assert.Equal("state", actualAddress.State);
+            Assert.Equal("postalcode", actualAddress.PostalCode);
+            Assert.Equal("country", actualAddress.Country);
+        }
+
+        [Fact]
+        public void OrderServiceAddsTwoOrdersForCustomer()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(4999)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            Order order2 = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(90m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            _orderService.PlaceOrder(order2);
+            IEnumerable<Order> actualCustomerOrders = order.Customer.OrderHistory;
+            Assert.NotEmpty(actualCustomerOrders);
+            Assert.Equal(2, actualCustomerOrders.Count());
+
+            var expectedOrders = new List<Order> { order, order2 };
+
+            foreach (Order actualOrder in actualCustomerOrders)
+            {
+                Order expectedOrder = expectedOrders.FirstOrDefault(eo => eo.TotalAmount == actualOrder.TotalAmount);
+                Assert.NotNull(expectedOrder);
+                Assert.Equal(expectedOrder.TotalAmount, actualOrder.TotalAmount);
+            }
+        }
+
+        [Fact]
+        public void OrderServiceTotalsupACustomersTotalPurchases()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(0)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            Order order2 = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(90m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            _orderService.PlaceOrder(order2);
+
+            Assert.Equal(190m, order.Customer.TotalPurchases);
         }
 
         private TException AssertOnException<TException>(OrderService orderService, Order order)
