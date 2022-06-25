@@ -59,9 +59,9 @@ namespace BuilderTestSample.Tests
             {
                 _orderService.PlaceOrder(order);
             }
-            catch (InvalidOrderException invalidOrderException)
+            catch (InvalidOrderException ex)
             {
-                throw new XunitException($"Should not throw InvalidOrderException: {invalidOrderException.Message}");
+                throw new XunitException($"Should not throw InvalidOrderException: {ex.Message}");
             }
         }
 
