@@ -528,6 +528,26 @@ namespace BuilderTestSample.Tests
             _orderService.PlaceOrder(order);
             IEnumerable<Order> actualCustomerOrders = order.Customer.OrderHistory;
             Assert.Single(actualCustomerOrders);
+
+            Order actualOrder = actualCustomerOrders.FirstOrDefault();
+            Assert.NotNull(actualOrder);
+            Assert.Equal(0, actualOrder.Id);
+
+            Customer actualCustomer = actualOrder.Customer;
+            Assert.Equal(1, actualCustomer.Id);
+            Assert.Equal("Bob", actualCustomer.FirstName);
+            Assert.Equal("Doe", actualCustomer.LastName);
+            Assert.Equal(499, actualCustomer.CreditRating);
+            Assert.Equal(4999, actualCustomer.TotalPurchases);
+
+            Address actualAddress = actualCustomer.HomeAddress;
+            Assert.Equal("street1", actualAddress.Street1);
+            Assert.Null(actualAddress.Street2);
+            Assert.Null(actualAddress.Street3);
+            Assert.Equal("city", actualAddress.City);
+            Assert.Equal("state", actualAddress.State);
+            Assert.Equal("postalcode", actualAddress.PostalCode);
+            Assert.Equal("country", actualAddress.Country);
         }
 
         private TException AssertOnException<TException>(OrderService orderService, Order order)
