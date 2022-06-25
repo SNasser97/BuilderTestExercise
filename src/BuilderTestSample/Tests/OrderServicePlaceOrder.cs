@@ -179,6 +179,24 @@ namespace BuilderTestSample.Tests
             Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
         }
 
+        [Fact]
+        public void ThrowsInvalidCreditExceptionWhenCustomerFirstnameAndLastnameAssignedAreWhitespaces()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .WithHomeAddress(new Address())
+                    .WithFirstname(" ")
+                    .WithLastname(" ")
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
+        }
+
         private TException AssertOrderException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {
