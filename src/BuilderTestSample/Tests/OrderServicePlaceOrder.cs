@@ -71,11 +71,40 @@ namespace BuilderTestSample.Tests
             Assert.Equal("Order cannot have null customer.", invalidOrderException.Message);
         }
 
+        [Fact]
+        public void ThrowsInvalidCustomerExceptionWhenCustomerIdIsZero()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(0)
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Customer Id must be greater than zero", invalidCustomerException.Message);
+        }
+
+        [Fact]
+        public void ThrowsInvalidCustomerExceptionWhenCustomerIdIsLessThanZero()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(-1)
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Customer Id must be greater than zero", invalidCustomerException.Message);
+        }
 
         private TException AssertOrderException<TException>(OrderService orderService, Order order)
-            where TException : Exception
+where TException : Exception
         {
-
+            
             TException exception = Assert.Throws<TException>(() => orderService.PlaceOrder(order));
             return exception;
         }
