@@ -44,9 +44,12 @@ namespace BuilderTestSample.Tests
         [Fact]
         public void DoesNotThrowInvalidOrderExceptionGivenOrderWithAmountOfOneHundred()
         {
+            Address address = _addressBuilder
+                    .WithStreetOne("street1")
+                    .Build();
             Customer customer = _customerBuilder
                     .WithId(1)
-                    .WithHomeAddress(new Address())
+                    .WithHomeAddress(address)
                     .WithFirstname("Bob")
                     .WithLastname("Doe")
                     .WithCreditRating(201)
@@ -224,9 +227,12 @@ namespace BuilderTestSample.Tests
         [Fact]
         public void DoesNotThrowInvalidCustomerExceptionWhenCustomerDetailsAreValid()
         {
+            Address address = _addressBuilder
+                    .WithStreetOne("street1")
+                    .Build();
             Customer customer = _customerBuilder
                     .WithId(1)
-                    .WithHomeAddress(new Address())
+                    .WithHomeAddress(address)
                     .WithFirstname("Bob")
                     .WithLastname("Doe")
                     .WithCreditRating(201)
