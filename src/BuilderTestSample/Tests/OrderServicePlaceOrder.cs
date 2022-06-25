@@ -49,6 +49,7 @@ namespace BuilderTestSample.Tests
                     .WithCity("city")
                     .WithState("state")
                     .WithPostalCode("postalcode")
+                    .WithCountry("country")
                     .Build();
             Customer customer = _customerBuilder
                     .WithId(1)
@@ -235,6 +236,7 @@ namespace BuilderTestSample.Tests
                     .WithCity("city")
                     .WithState("state")
                     .WithPostalCode("postalcode")
+                    .WithCountry("country")
                     .Build();
             Customer customer = _customerBuilder
                     .WithId(1)
