@@ -48,6 +48,7 @@ namespace BuilderTestSample.Tests
                     .WithHomeAddress(new Address())
                     .WithFirstname("Bob")
                     .WithLastname("Doe")
+                    .WithCreditRating(201)
                     .Build();
             Order order = _orderBuilder
                     .WithId(0)
@@ -180,21 +181,22 @@ namespace BuilderTestSample.Tests
         }
 
         [Fact]
-        public void ThrowsInvalidCreditExceptionWhenCustomerFirstnameAndLastnameAssignedAreWhitespaces()
+        public void ThrowsInsufficientCreditExceptionWhenCustomerCreditRatingIsLessThanTwoHundred()
         {
             Customer customer = _customerBuilder
                     .WithId(1)
                     .WithHomeAddress(new Address())
-                    .WithFirstname(" ")
-                    .WithLastname(" ")
+                    .WithFirstname("Bob")
+                    .WithLastname("Doe")
+                    .WithCreditRating(199)
                     .Build();
             Order order = _orderBuilder
                     .WithId(0)
                     .WithAmount(100m)
                     .WithCustomer(customer)
                     .Build();
-            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
-            Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
+            InsufficientCreditException insufficientCreditException = AssertOrderException<InsufficientCreditException>(_orderService, order);
+            Assert.Equal("Credit rating must be greater than 200", insufficientCreditException.Message);
         }
 
         private TException AssertOrderException<TException>(OrderService orderService, Order order)
