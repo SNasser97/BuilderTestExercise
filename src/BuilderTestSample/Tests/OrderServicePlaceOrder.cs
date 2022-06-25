@@ -440,6 +440,11 @@ namespace BuilderTestSample.Tests
             }
         }
 
+        /*
+            Order service tests - test order service private methods  
+        */
+
+
         private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {
