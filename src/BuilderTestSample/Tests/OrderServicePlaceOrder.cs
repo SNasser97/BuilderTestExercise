@@ -13,6 +13,7 @@ namespace BuilderTestSample.Tests
         private readonly OrderService _orderService = new ();
         private readonly OrderBuilder _orderBuilder = new ();
         private readonly CustomerBuilder _customerBuilder = new ();
+        private readonly AddressBuilder _addressBuilder = new ();
 
         /*
             Order exception checks - tests ValidateOrder
@@ -248,6 +249,32 @@ namespace BuilderTestSample.Tests
             {
                 throw new XunitException($"Should not throw InsufficientCreditException: {ex.Message}");
             }
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public void ThrowsInvalidAddressExceptionWhenStreetOneIsNullOrEmpty(string streetOneValues)
+        {
+            Address address = _addressBuilder
+                    .WithStreetOne(streetOneValues)
+                    .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(201)
+                   .WithTotalPurchases(1)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidAddressException invalidAddressException = AssertOnException<InvalidAddressException>(_orderService, order);
+            Assert.Equal("StreetOne cannot be null or empty", invalidAddressException.Message);
         }
 
         private TException AssertOnException<TException>(OrderService orderService, Order order)
