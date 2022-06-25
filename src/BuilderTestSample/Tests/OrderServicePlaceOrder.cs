@@ -45,6 +45,7 @@ namespace BuilderTestSample.Tests
         {
             Customer customer = _customerBuilder
                     .WithId(1)
+                    .WithHomeAddress(new Address())
                     .Build();
             Order order = _orderBuilder
                     .WithId(0)
@@ -104,6 +105,22 @@ namespace BuilderTestSample.Tests
                     .Build();
             InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer Id must be greater than zero", invalidCustomerException.Message);
+        }
+
+        [Fact]
+        public void ThrowsInvalidCustomerExceptionWhenCustomerAddressIsNull()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .WithHomeAddress(null)
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Customer Address cannot be null", invalidCustomerException.Message);
         }
 
         private TException AssertOrderException<TException>(OrderService orderService, Order order)
