@@ -3,6 +3,8 @@ using BuilderTestSample.Model;
 using BuilderTestSample.Services;
 using BuilderTestSample.Tests.TestBuilders;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using Xunit.Sdk;
 
@@ -497,6 +499,35 @@ namespace BuilderTestSample.Tests
 
             _orderService.PlaceOrder(order);
             Assert.False(order.IsExpedited);
+        }
+
+        [Fact]
+        public void OrderServiceAddsOrderForCustomer()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(4999)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            IEnumerable<Order> actualCustomerOrders = order.Customer.OrderHistory;
+            Assert.Single(actualCustomerOrders);
         }
 
         private TException AssertOnException<TException>(OrderService orderService, Order order)
