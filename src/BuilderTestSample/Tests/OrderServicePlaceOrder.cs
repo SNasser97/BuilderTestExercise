@@ -550,6 +550,51 @@ namespace BuilderTestSample.Tests
             Assert.Equal("country", actualAddress.Country);
         }
 
+        [Fact]
+        public void OrderServiceAddsTwoOrdersForCustomer()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(4999)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            Order order2 = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(90m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            _orderService.PlaceOrder(order2);
+            IEnumerable<Order> actualCustomerOrders = order.Customer.OrderHistory;
+            Assert.NotEmpty(actualCustomerOrders);
+            Assert.Equal(2, actualCustomerOrders.Count());
+
+            var expectedOrders = new List<Order> { order, order2 };
+
+            foreach (Order actualOrder in actualCustomerOrders)
+            {
+                Order expectedOrder = expectedOrders.FirstOrDefault(eo => eo.TotalAmount == actualOrder.TotalAmount);
+                Assert.NotNull(expectedOrder);
+                Assert.Equal(expectedOrder.TotalAmount, actualOrder.TotalAmount);
+            }
+        }
+
         private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
         {
