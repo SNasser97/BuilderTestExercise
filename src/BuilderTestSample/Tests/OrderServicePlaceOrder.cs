@@ -443,7 +443,61 @@ namespace BuilderTestSample.Tests
         /*
             Order service tests - test order service private methods  
         */
+        [Fact]
+        public void OrderServiceSetsExpeditedTrueOnOrderThatExceedsFiveThousandTotalPurchasesWithCreditLimitMoreThanFiveHundred()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(501)
+                   .WithTotalPurchases(5001)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
 
+            _orderService.PlaceOrder(order);
+            Assert.True(order.IsExpedited);
+        }
+
+        [Fact]
+        public void OrderServiceSetsExpeditedFalseOnOrderLessThanFiveThousandTotalPurchasesWithCreditLimitLessThanFiveHundred()
+        {
+            Address address = _addressBuilder
+                   .WithStreetOne("street1")
+                   .WithCity("city")
+                   .WithState("state")
+                   .WithPostalCode("postalcode")
+                   .WithCountry("country")
+                   .Build();
+            Customer customer = _customerBuilder
+                   .WithId(1)
+                   .WithHomeAddress(address)
+                   .WithFirstname("Bob")
+                   .WithLastname("Doe")
+                   .WithCreditRating(499)
+                   .WithTotalPurchases(4999)
+                   .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+
+            _orderService.PlaceOrder(order);
+            Assert.False(order.IsExpedited);
+        }
 
         private TException AssertOnException<TException>(OrderService orderService, Order order)
 where TException : Exception
