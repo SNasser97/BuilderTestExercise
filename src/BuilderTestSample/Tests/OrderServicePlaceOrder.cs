@@ -14,7 +14,9 @@ namespace BuilderTestSample.Tests
         private readonly OrderBuilder _orderBuilder = new ();
         private readonly CustomerBuilder _customerBuilder = new ();
 
-        // added comment
+        /*
+            Order exception checks - tests ValidateOrder
+        */
         [Fact]
         public void ThrowsInvalidOrderExceptionGivenOrderWithExistingId()
         {
@@ -71,6 +73,9 @@ namespace BuilderTestSample.Tests
             Assert.Equal("Order cannot have null customer.", invalidOrderException.Message);
         }
 
+        /*
+            Customer exception checks - tests ValidateCustomer
+        */
         [Fact]
         public void ThrowsInvalidCustomerExceptionWhenCustomerIdIsZero()
         {
