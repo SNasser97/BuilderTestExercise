@@ -46,6 +46,8 @@ namespace BuilderTestSample.Tests
             Customer customer = _customerBuilder
                     .WithId(1)
                     .WithHomeAddress(new Address())
+                    .WithFirstname("Bob")
+                    .WithLastname("Doe")
                     .Build();
             Order order = _orderBuilder
                     .WithId(0)
@@ -121,6 +123,60 @@ namespace BuilderTestSample.Tests
                     .Build();
             InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
             Assert.Equal("Customer Address cannot be null", invalidCustomerException.Message);
+        }
+
+        [Fact]
+        public void ThrowsInvalidCustomerExceptionWhenCustomerFirstnameAndLastnameAssignedAreEmptyStrings()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .WithHomeAddress(new Address())
+                    .WithFirstname(string.Empty)
+                    .WithLastname(string.Empty)
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
+        }
+
+        [Fact]
+        public void ThrowsInvalidCustomerExceptionWhenCustomerFirstnameAndLastnameAssignedAreNull()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .WithHomeAddress(new Address())
+                    .WithFirstname(null)
+                    .WithLastname(null)
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
+        }
+
+        [Fact]
+        public void ThrowsInvalidCustomerExceptionWhenCustomerFirstnameAndLastnameAssignedAreWhitespaces()
+        {
+            Customer customer = _customerBuilder
+                    .WithId(1)
+                    .WithHomeAddress(new Address())
+                    .WithFirstname(" ")
+                    .WithLastname(" ")
+                    .Build();
+            Order order = _orderBuilder
+                    .WithId(0)
+                    .WithAmount(100m)
+                    .WithCustomer(customer)
+                    .Build();
+            InvalidCustomerException invalidCustomerException = AssertOrderException<InvalidCustomerException>(_orderService, order);
+            Assert.Equal("Customer must have firstname and lastname", invalidCustomerException.Message);
         }
 
         private TException AssertOrderException<TException>(OrderService orderService, Order order)
